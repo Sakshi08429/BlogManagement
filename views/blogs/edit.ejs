@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
+
+<div class="container mt-4">
+  <h2>Edit Blog</h2>
+
+  <form action="/blogs/update/<%= blog.id %>" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <label>Title</label>
+      <input type="text" name="title" value="<%= blog.title %>" class="form-control" required />
+    </div>
+
+    <div class="form-group mt-2">
+      <label>Description</label>
+      <textarea name="description" class="form-control" rows="4" required><%= blog.description %></textarea>
+    </div>
+
+    <div class="form-group mt-2">
+      <label>Sector</label>
+      <select name="sectorId" class="form-control" required>
+        <% sectors.forEach(sector => { %>
+          <option value="<%= sector.id %>" <%= blog.sectorId === sector.id ? 'selected' : '' %>><%= sector.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="form-check mt-2">
+      <input type="checkbox" name="isPublic" class="form-check-input" <%= blog.isPublic ? 'checked' : '' %> />
+      <label class="form-check-label">Make Public</label>
+    </div>
+
+    <div class="form-group mt-3">
+      <label>Update Image (optional)</label>
+      <input type="file" name="image" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Update Blog</button>
+  </form>
+</div>
+
+
+
+
+</body>
+</html>

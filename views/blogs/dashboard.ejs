@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard</title>
+
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .sidebar {
+      height: 100vh;
+      position: fixed;
+      width: 240px;
+      background-color: #212529;
+      padding-top: 30px;
+      overflow-y: auto;
+    }
+    .sidebar h4 {
+      color: white;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 12px 20px;
+      transition: background 0.3s;
+    }
+    .sidebar a:hover,
+    .sidebar .active {
+      background-color: #343a40;
+    }
+    .main-content {
+      margin-left: 240px;
+      padding: 30px;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .logout-form button {
+      background: none;
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      width: 100%;
+      text-align: left;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+    .logout-form button:hover {
+      background-color: #343a40;
+    }
+    .card-title {
+      font-weight: 600;
+    }
+    .badge {
+      font-size: 0.85rem;
+    }
+    .card-footer {
+      background-color: #fff;
+      border-top: none;
+    }
+
+    .welcome-banner {
+  background: linear-gradient(to right, #6a11cb, #2575fc); /* Vibrant indigo-blue blend */
+  border-left: 5px solid #fff;
+}
+
+  </style>
+</head>
+<body>
+
+
+
+
+  
+  <div class="sidebar">
+    <h4><i class="bi bi-speedometer2"></i> DashBoard</h4>
+   
+
+    <% if (user.role === 'superadmin') { %>
+       
+    <a href="/user"><i class="bi bi-people"></i> Users</a>
+      <a href="/blogs/superadmin/all"><i class="bi bi-journal-richtext"></i> Blogs</a>
+      <a href="/superadmin/add-user"><i class="bi bi-person-plus"></i> Add User</a>
+      <a href="/superadmin/add-admin"><i class="bi bi-person-badge"></i> Add Admin</a>
+      <a href="/superadmin/add-sector"><i class="bi bi-tags"></i> Add Sector</a>
+      <a href="/superadmin/approval"><i class="bi bi-check-circle"></i> Approve Blogs</a>
+    <% } else if (user.role === 'admin') { %>
+      <a href="/user"><i class="bi bi-people"></i> Users</a>
+      <a href="/blogs/superadmin/all"><i class="bi bi-journal-richtext"></i>All Blogs</a>
+      <a href="/blogs/my"><i class="bi bi-journal-richtext"></i> Blogs</a>
+      <a href="/admin/add-user"><i class="bi bi-person-plus"></i> Add User</a>
+       <a href="/admin/approval"><i class="bi bi-check-circle"></i> Approve Blogs</a>
+    <% } %>
+
+    <% if (user.role === 'user') { %>
+       
+     
+      <a href="/blogs/superadmin/all"><i class="bi bi-journal-richtext"></i>All Blogs</a>
+        <a href="/blogs/user/all"><i class="bi bi-journal-richtext"></i>My Blogs</a>
+      <a href="/blogs/myBlogs"><i class="bi bi-pencil-square"></i> Create Blog</a>
+    <% } %>
+
+
+
+    
+    <form action="/logout" method="POST" class="logout-form mt-4">
+      <button type="submit"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    </form>
+  </div>
+
+   <div class="main-content px-4 py-3">
+  <div class="welcome-banner d-flex justify-content-between align-items-center p-4 rounded shadow-sm">
+    <div>
+      <h2 class="text-white fw-bold mb-1">Welcome, <%= user.name %></h2>
+      <p class="text-light mb-0">Role: <span class="badge bg-light text-dark text-capitalize"><%= user.role %></span></p>
+    </div>
+    <div>
+      <i class="bi bi-person-circle fs-1 text-white"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+</body>
+</html>

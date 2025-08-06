@@ -12,7 +12,7 @@ const sectorRoutes = require('./routes/sectorRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Set view engine
+//  view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -22,10 +22,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cookieParser());
-// Routes
+
+
+
 app.use('/', authRoutes);
 app.use('/blogs', blogRoutes);
 app.use('/sectors', sectorRoutes);
+
 
 // Home
 app.get('/', (req, res) => {
@@ -34,7 +37,7 @@ app.get('/', (req, res) => {
 
 
 const dashboardRoutes = require('./routes/dashboardRoutes');
-app.use('/', dashboardRoutes); // or app.use('/dashboard', dashboardRoutes);
+app.use('/', dashboardRoutes); 
 
 const adminRoutes = require('./routes/adminRoutes');
 app.use('/admin', adminRoutes);

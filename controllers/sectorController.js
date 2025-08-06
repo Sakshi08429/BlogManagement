@@ -1,7 +1,7 @@
 const { Sector, AdminSector, User } = require('../models');
 const Joi = require('joi');
 
-// Superadmin: Create Sector
+// Create Sector
 exports.createSector = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().required(),
@@ -23,7 +23,7 @@ exports.createSector = async (req, res) => {
   }
 };
 
-// Superadmin: Assign Sector to Admin
+// Sector for Admin
 exports.assignSectorToAdmin = async (req, res) => {
   const schema = Joi.object({
     adminId: Joi.string().required(),

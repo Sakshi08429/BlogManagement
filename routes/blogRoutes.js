@@ -9,7 +9,7 @@ const upload = require('../middlewares/upload');
 router.post(
   '/create',
   authenticateJWT,
-  roleMiddleware(['user']),
+  roleMiddleware(['user','admin', 'superadmin']),
   upload.single('image'),
   blogController.createBlogRequest
 );
@@ -33,12 +33,6 @@ router.get('/dashboard', authenticateJWT, blogController.getDashboard);
 
 
 
-// Edit + Update blog
-// router.get('/edit/:id', authenticateJWT, blogController.getEditBlog);
-// router.post('/update/:id', authenticateJWT, upload.single('image'), blogController.updateBlog);
-
-// Delete blog
-// router.post('/delete/:id', authenticateJWT, blogController.deleteBlog);
 
 router.get('/myBlogs',authenticateJWT,blogController.createBlogs);
 
@@ -52,4 +46,7 @@ router.get('/user/all', authenticateJWT, roleMiddleware(['user']), blogControlle
 //for admin to view his blogs
 router.get('/my', authenticateJWT, roleMiddleware(['admin']), blogController.getAdminBlogs);
 
+
+
+router.get('/public', blogController.getAllBlogsForSuperAdmin);
 module.exports = router;

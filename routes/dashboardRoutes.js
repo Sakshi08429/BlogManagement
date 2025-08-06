@@ -20,7 +20,9 @@ router.get('/dashboard', ensureAuthenticated, async (req, res) => {
 
     const totalPages = Math.ceil(count / limit);
 
-    //  Fetch all users except superadmin (role = 'admin' or 'user')
+    
+
+    //  Fetch all users except Superadmin 
     const users = await User.findAll({
       where: {
         role: ['admin', 'user']

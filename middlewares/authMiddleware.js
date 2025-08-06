@@ -40,9 +40,7 @@ const checkRole = (roles) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = decoded;
 
-      // if (!roles.includes(decoded.role)) {
-      //   return res.status(403).render('unauthorized', { message: 'Access denied' });
-      // }
+      
 
       next();
     } catch (err) {

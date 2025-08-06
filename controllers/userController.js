@@ -80,22 +80,21 @@ if (existingEntry) {
   }
 };
 
+exports.DeleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findByPk(userId);
 
-// exports.DeleteUser = async (req, res) => {
-//   try {
-//     const userId = req.params.id;
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
 
-//     const user = await User.findByPk(userId);
-//     if (!user) {
-//       return res.status(404).send('User not found');
-//     }
+    await user.destroy();
+    res.redirect('/user');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+}
 
-//     await user.destroy();
-//     await AdminSector.destroy({ where: { adminId: userId } });
 
-//     res.redirect('/user');
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('Internal Server Error');
-//   }
-// }

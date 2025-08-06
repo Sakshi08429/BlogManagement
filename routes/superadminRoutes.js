@@ -4,7 +4,7 @@ const { ensureAuthenticated, checkRole } = require('../middlewares/authMiddlewar
 const { Sector, User,Blog,AdminSector } = require('../models');
 const bcrypt = require('bcryptjs');
 
-// GET: Add User Form
+//  Add User Form
 router.get('/superadmin/add-user', ensureAuthenticated, checkRole(['superadmin']), async (req, res) => {
   try {
     const sectors = await Sector.findAll();
@@ -15,7 +15,7 @@ router.get('/superadmin/add-user', ensureAuthenticated, checkRole(['superadmin']
   }
 });
 
-// POST: Add User Logic
+//  Add User 
 router.post('/superadmin/add-user', ensureAuthenticated, checkRole(['superadmin']), async (req, res) => {
   const { name, email, password, role, sectorId } = req.body;
   try {
@@ -47,7 +47,7 @@ router.get('/superadmin/add-admin', ensureAuthenticated, checkRole(['superadmin'
   }
 });
 
-// POST: Add User Logic
+//  Add User 
 router.post('/superadmin/add-admin', ensureAuthenticated, checkRole(['superadmin']), async (req, res) => {
   const { name, email, password, role, sectorId } = req.body;
   try {
@@ -58,19 +58,21 @@ router.post('/superadmin/add-admin', ensureAuthenticated, checkRole(['superadmin
       email,
       password: hashedPassword,
       role:'admin',
-      sectorId: role === 'admin' ? sectorId : null
+      sectorId: role === 'admin' ? sectorId : null,
+      createdBy: req.user.id,
+      updatedBy: req.user.id
     });
  await AdminSector.create({ adminId: user.id, sectorId });
     res.redirect('/dashboard');
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error adding user');
+    res.status(500).send('Error adding admin');
   }
 });
 
 
 //add sector
-router.get('/superadmin/add-sector', ensureAuthenticated, checkRole(['superadmin']), async (req, res) => {
+router.get('/superadmin/add-sector', ensureAuthenticated, async (req, res) => {
   try {
     const sectors = await Sector.findAll();
     res.render('superadmin/addSector');
@@ -80,8 +82,8 @@ router.get('/superadmin/add-sector', ensureAuthenticated, checkRole(['superadmin
   }
 });
 
-// POST: Add User Logic
-router.post('/superadmin/add-sector', ensureAuthenticated, checkRole(['superadmin']), async (req, res) => {
+// Add User 
+router.post('/superadmin/add-sector', ensureAuthenticated, async (req, res) => {
   const { name } = req.body;
   try {
    
@@ -102,7 +104,7 @@ router.post('/superadmin/add-sector', ensureAuthenticated, checkRole(['superadmi
 
 
 //get all blogs for approval
-router.get('/superadmin/approval', ensureAuthenticated, checkRole(['superadmin']), async (req, res) => {
+router.get('/superadmin/approval', ensureAuthenticated, async (req, res) => {
   
   const page = parseInt(req.query.page) || 1;
   const limit = 5;
@@ -126,6 +128,7 @@ router.get('/superadmin/approval', ensureAuthenticated, checkRole(['superadmin']
     res.status(500).json({ error: 'Error fetching blogs for approval' });
   } 
 });
+
 
 
 

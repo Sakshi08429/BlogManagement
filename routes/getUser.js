@@ -47,8 +47,7 @@ router.get('/edit/:id', ensureAuthenticated, userController.EditUser);
 
 router.post('/edit/:id', ensureAuthenticated, userController.SaveEditUser);
 
-// router.post('/delete/:id', ensureAuthenticated, userController.DeleteUser);
- 
+ router.post('/delete/:id', ensureAuthenticated, userController.DeleteUser);
 
 
 module.exports = router;

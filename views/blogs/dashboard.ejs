@@ -96,12 +96,14 @@
       <a href="/superadmin/add-admin"><i class="bi bi-person-badge"></i> Add Admin</a>
       <a href="/superadmin/add-sector"><i class="bi bi-tags"></i> Add Sector</a>
       <a href="/superadmin/approval"><i class="bi bi-check-circle"></i> Approve Blogs</a>
+      <a href="/blogs/myBlogs"><i class="bi bi-pencil-square"></i> Create Blog</a>
     <% } else if (user.role === 'admin') { %>
       <a href="/user"><i class="bi bi-people"></i> Users</a>
       <a href="/blogs/superadmin/all"><i class="bi bi-journal-richtext"></i>All Blogs</a>
       <a href="/blogs/my"><i class="bi bi-journal-richtext"></i> Blogs</a>
       <a href="/admin/add-user"><i class="bi bi-person-plus"></i> Add User</a>
        <a href="/admin/approval"><i class="bi bi-check-circle"></i> Approve Blogs</a>
+       <a href="/blogs/myBlogs"><i class="bi bi-pencil-square"></i> Create Blog</a>
     <% } %>
 
     <% if (user.role === 'user') { %>
@@ -131,10 +133,5 @@
     </div>
   </div>
 </div>
-
-
-
-
-
 </body>
 </html>

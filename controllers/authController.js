@@ -21,6 +21,8 @@ const login = async (req, res) => {
     const match = await bcrypt.compare(value.password, user.password);
     if (!match) return res.status(401).render('login', { error: 'Invalid credentials' });
 
+     
+
     const token = jwt.sign(
       {
         id: user.id,
@@ -32,7 +34,7 @@ const login = async (req, res) => {
       { expiresIn: '2d' }
     );
 
-    // Set JWT in cookie
+  
     res.cookie('token', token, {
       httpOnly: true,
       secure: false, 

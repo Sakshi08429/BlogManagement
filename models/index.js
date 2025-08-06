@@ -7,8 +7,8 @@ const AdminSector = require('./adminSector');
 
 // Associations
 
-User.hasMany(Blog, { foreignKey: 'createdBy', as: 'blogs' });
-Blog.belongsTo(User, { foreignKey: 'createdBy', as: 'author' }); 
+User.hasMany(Blog, { foreignKey: 'createdBy', as: 'blogs'});
+Blog.belongsTo(User, { foreignKey: 'createdBy', as: 'author'  }); 
 
 
 

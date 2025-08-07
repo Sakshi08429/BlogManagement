@@ -19,9 +19,18 @@ router.get(
   '/approve/:id',
   authenticateJWT,
   roleMiddleware(['admin', 'superadmin']),
+
   blogController.approveBlog
 );
 
+
+//reject blog
+router.get(
+  '/reject/:id',
+  authenticateJWT,
+  roleMiddleware(['admin', 'superadmin']),
+  blogController.rejectBlog
+);
 
 
 
@@ -30,7 +39,6 @@ router.get('/superadmin/all', authenticateJWT, roleMiddleware(['superadmin','adm
 
 // Dashboard view
 router.get('/dashboard', authenticateJWT, blogController.getDashboard);
-
 
 
 
@@ -49,4 +57,23 @@ router.get('/my', authenticateJWT, roleMiddleware(['admin']), blogController.get
 
 
 router.get('/public', blogController.getAllBlogsForSuperAdmin);
+
+
+
+router.get('/edit/:id', authenticateJWT, roleMiddleware([ 'superadmin']), blogController.getBlogForEdit);
+router.post('/edit/:id', authenticateJWT, roleMiddleware(['superadmin']), upload.single('image'), blogController.updateBlog);  
+
+
+router.get('/admin/edit/:id', authenticateJWT, roleMiddleware(['admin']), blogController.getBlogForEditAdmin);
+
+router.post('/admin/edit/:id', authenticateJWT, roleMiddleware(['admin']), upload.single('image'), blogController.updateBlogForAdmin);
+
+
+router.get('/user/edit/:id', authenticateJWT, roleMiddleware(['user']), blogController.getBlogForEditUser); 
+router.post('/user/edit/:id', authenticateJWT, roleMiddleware(['user']), upload.single('image'), blogController.updateBlogForUser);
+
+
+
+router.post('/delete/:id', authenticateJWT, roleMiddleware(['user', 'admin', 'superadmin']), blogController.deleteBlog);
+
 module.exports = router;

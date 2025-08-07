@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
 
 
 const dashboardRoutes = require('./routes/dashboardRoutes');
-app.use('/', dashboardRoutes); 
+app.use('/dashboard', dashboardRoutes); 
 
 const adminRoutes = require('./routes/adminRoutes');
 app.use('/admin', adminRoutes);

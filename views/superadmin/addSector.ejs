@@ -10,22 +10,25 @@
 <body>
 
   <div class="container mt-5">
-    <div class="card shadow-sm rounded-4">
-      <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">Add New Sector</h4>
-      </div>
-      <div class="card-body">
-        <form action="/superadmin/add-sector" method="POST">
-          <div class="mb-3">
-            <label for="sectorName" class="form-label">Sector Name</label>
-            <input type="text" id="sectorName" name="name" class="form-control" placeholder="Enter sector name" required>
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5"> <!-- Controls the width -->
+        <div class="card shadow-sm rounded-4">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Add New Sector</h4>
           </div>
-          <button type="submit" class="btn btn-success">Add Sector</button>
-        </form>
+          <div class="card-body">
+            <form action="/superadmin/add-sector" method="POST">
+              <div class="mb-3">
+                <label for="sectorName" class="form-label">Sector Name</label>
+                <input type="text" id="sectorName" name="name" class="form-control" placeholder="Enter sector name" required>
+              </div>
+              <button type="submit" class="btn btn-success">Add Sector</button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  
 </body>
 </html>

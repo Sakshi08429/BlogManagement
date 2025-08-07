@@ -3,10 +3,10 @@ const router = express.Router();
 const { ensureAuthenticated } = require('../middlewares/authMiddleware');
 const { Blog, Sector, User } = require('../models'); // Import your models
 
-router.get('/dashboard', ensureAuthenticated, async (req, res) => {
+router.get('/', ensureAuthenticated, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 5;
+    const limit = 3;
     const offset = (page - 1) * limit;
 
     const { count, rows: blogs } = await Blog.findAndCountAll({

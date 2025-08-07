@@ -3,6 +3,7 @@ const roleMiddleware = (allowedRoles) => {
     const userRole = req.user?.role;
     if (!userRole || !allowedRoles.includes(userRole)) {
       return res.status(403).json({ message: 'Forbidden: Role not permitted' });
+    
     }
     next();
   };

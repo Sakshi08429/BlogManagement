@@ -24,6 +24,7 @@ exports.createBlogRequest = async (req, res) => {
   const { error, value } = schema.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
 const approved = (req.user.role === 'user') ? false : true;
+const status='pending';
   try {
     const blog = await Blog.create({
       title: value.title,
@@ -32,6 +33,7 @@ const approved = (req.user.role === 'user') ? false : true;
       isPublic: value.isPublic,
       image: req.file?.filename || null,
       approved: approved,
+      status: status,
 
       createdBy: req.user.id,
       updatedBy: req.user.id,
@@ -49,6 +51,8 @@ const approved = (req.user.role === 'user') ? false : true;
       order: [['createdAt', 'DESC']],
     });
     
+
+
     const dbUser = await User.findByPk(req.user.id);
     const blogs = await Blog.findAll({
       where: { createdBy: req.user.id },
@@ -60,12 +64,7 @@ const approved = (req.user.role === 'user') ? false : true;
    
    
 
-    res.render('blogs/dashboard', {
-      user: dbUser,
-      blogs: blogs,
-      currentPage: page,
-      totalPages: Math.ceil(count / limit),
-    });
+    res.redirect('/dashboard'); 
    
     
   } 
@@ -95,6 +94,7 @@ exports.approveBlog = async (req, res) => {
     }
 
     blog.approved = true;
+    blog.status = 'approved';
     blog.updatedBy = req.user.id;
     await blog.save();
  const page = parseInt(req.query.page) || 1;
@@ -131,9 +131,10 @@ exports.approveBlog = async (req, res) => {
 
 // current user's blogs
 exports.getUserBlogs = async (req, res) => {
+
   try {
     const blogs = await Blog.findAll({
-      where: { createdBy: req.user.id , approved:true},
+      where: { createdBy: req.user.id },
       include: [Sector],
     });
   const page = parseInt(req.query.page) || 1;
@@ -141,16 +142,16 @@ exports.getUserBlogs = async (req, res) => {
   const offset = (page - 1) * limit;
    const currentPage=page;
    const { count, rows } = await Blog.findAndCountAll({
-      where: { createdBy: req.user.id, approved: true },
+      where: { createdBy: req.user.id },
       include: [Sector],
       limit,
       offset,
       order: [['createdAt', 'DESC']],
     });
   const totalPages= Math.ceil(count / limit);
+ 
 
-
-    res.render('blogs/public', { blogs:rows , currentPage:currentPage, totalPages:totalPages });
+    res.render('blogs/user', { blogs:rows , currentPage:currentPage, totalPages:totalPages,user: req.user });
   } catch (err) {
     res.status(500).json({ error: 'Could not fetch user blogs' });
     console.log(err);
@@ -229,9 +230,9 @@ exports.getAllBlogsForSuperAdmin = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 3;
     const offset = (page - 1) * limit;
-
+   
     const { count, rows } = await Blog.findAndCountAll({
-      where: { approved: true },  
+      where: { approved: true ,status: 'approved'},  
       include: [
         { model: User, as: 'author' },
         { model: Sector }
@@ -245,6 +246,7 @@ exports.getAllBlogsForSuperAdmin = async (req, res) => {
       blogs: rows,
       user: req.user,
       currentPage: page,
+
       totalPages: Math.ceil(count / limit),
     });
   } catch (err) {
@@ -254,7 +256,7 @@ exports.getAllBlogsForSuperAdmin = async (req, res) => {
 };
 
 
-//for admin to view his blogs
+
 exports.getAdminBlogs = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -289,10 +291,11 @@ exports.getAdminBlogs = async (req, res) => {
       order: [['createdAt', 'DESC']],
     });
 
-    res.render('blogs/public', {
+    res.render('blogs/admin', {
       blogs: rows,
       user: req.user,
       currentPage: page,
+      sectorId: adminSectorIds,
       totalPages: Math.ceil(count / limit),
     });
   } catch (err) {
@@ -320,6 +323,7 @@ exports.getPublicBlogs = async (req, res) => {
     });
 
     res.render('blogs/public',{
+      user: req.user,
       blogs: rows,
       currentPage: page,
       totalPages: Math.ceil(count / limit),
@@ -331,3 +335,205 @@ exports.getPublicBlogs = async (req, res) => {
 
 
 
+exports.getBlogForEdit = async (req, res) => {
+  const blogId = req.params.id;
+
+  try {
+    const blog = await Blog.findByPk(blogId);
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+    const sectors = await Sector.findAll();
+    res.render('blogs/edit', { blog, sectors, user: req.user });
+  } catch (err) {
+    console.error('Error fetching blog for edit:', err);
+    res.status(500).json({ error: 'Error fetching blog for edit' });
+  }
+};
+
+
+exports.updateBlog = async (req, res) => {
+  const blogId = req.params.id;
+  const { title, description, sectorId, isPublic } = req.body;
+
+  try {
+    const blog = await Blog.findByPk(blogId);
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+    blog.title = title;
+    blog.description = description;
+    blog.sectorId = sectorId;
+    blog.isPublic = isPublic;
+    blog.updatedBy = req.user.id;
+
+    if (req.file) {
+     
+      if (blog.image) {
+        const imagePath = path.join(__dirname, '..', 'public', 'uploads', blog.image);
+
+        fs.unlinkSync(oldImagePath);
+      }
+      blog.image = req.file.filename;
+    }
+
+    await blog.save();
+    res.redirect('/blogs/superadmin/all');
+  } catch (err) {
+    console.error('Error updating blog:', err);
+    res.status(500).json({ error: 'Error updating blog' });
+  }
+}
+
+
+exports.deleteBlog = async (req, res) => {
+  const blogId = req.params.id;
+
+  try {
+    const blog = await Blog.findByPk(blogId);
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+    if (blog.image) {
+     const imagePath = path.join(__dirname, '..', 'public', 'uploads', blog.image);
+
+      fs.unlinkSync(imagePath);
+    }
+
+    await blog.destroy();
+    if(req.user.role==='superadmin')
+    res.redirect('/blogs/superadmin/all');
+    else if(req.user.role==='admin')  
+    res.redirect('/blogs/my');
+    else  
+    res.redirect('/blogs/user/all');
+  } catch (err) {
+    console.error('Error deleting blog:', err);
+    res.status(500).json({ error: 'Error deleting blog' });
+  }
+};
+
+
+
+exports.rejectBlog = async (req, res) => {
+  const blogId=req.params.id;
+  const blog = await Blog.findByPk(blogId);
+  if (!blog) return res.status(404).json({ message: 'Blog not found' });  
+  
+  blog.approved=true;
+  blog.status='rejected';
+
+  blog.updatedBy = req.user.id;
+  await blog.save();
+  const page = parseInt(req.query.page) || 1;
+  const limit = 5;
+  const offset = (page - 1) * limit;
+  const { count, rows } = await Blog.findAndCountAll({
+    where: { approved: false },
+    include: [Sector, { model: User, as: 'author' }],
+    limit,
+    offset,
+    order: [['createdAt', 'DESC']],
+  });
+  res.render('blogs/approval', {
+    blogs: rows,
+  
+    user: req.user,
+    currentPage: page,  
+    totalPages: Math.ceil(count / limit),
+  });
+
+
+}
+
+
+
+exports.getBlogForEditAdmin = async (req, res) => {
+  const blogId = req.params.id;
+
+  try {
+    const blog = await Blog.findByPk(blogId);
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+    const sectors = await Sector.findAll();
+    res.render('blogs/edit', { blog, sectors ,user: req.user});
+  } catch (err) {
+    console.error('Error fetching blog for edit:', err);
+    res.status(500).json({ error: 'Error fetching blog for edit' });
+  }
+} 
+
+
+
+exports.updateBlogForAdmin = async (req, res) => {
+  const blogId = req.params.id;
+  const { title, description, sectorId, isPublic } = req.body;
+
+  try {
+    const blog = await Blog.findByPk(blogId);
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+    blog.title = title;
+    blog.description = description;
+    blog.sectorId = sectorId;
+    blog.isPublic = isPublic;
+    blog.updatedBy = req.user.id;
+
+    if (req.file) {
+      if (blog.image) {
+        const oldImagePath = path.join(__dirname, '..', 'public', 'uploads', blog.image);
+        fs.unlinkSync(oldImagePath);
+      }
+      blog.image = req.file.filename;
+    }
+
+    await blog.save();
+    res.redirect('/blogs/my');
+  } catch (err) {
+    console.error('Error updating blog:', err);
+    res.status(500).json({ error: 'Error updating blog' });
+  }
+}
+
+
+exports.getBlogForEditUser = async (req, res) => {
+  const blogId = req.params.id;
+
+  try {
+    const blog = await Blog.findByPk(blogId);
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+    const sectors = await Sector.findAll();
+    res.render('blogs/edit', { blog, sectors ,user: req.user});
+  } catch (err) {
+    console.error('Error fetching blog for edit:', err);
+    res.status(500).json({ error: 'Error fetching blog for edit' });
+  }
+} 
+
+exports.updateBlogForUser = async (req, res) => {
+  const blogId = req.params.id;
+  const { title, description, sectorId, isPublic } = req.body;
+
+  try {
+    const blog = await Blog.findByPk(blogId);
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+    blog.title = title;
+    blog.description = description;
+    blog.sectorId = sectorId;
+    blog.isPublic = isPublic;
+    blog.updatedBy = req.user.id;
+
+    if (req.file) {
+      if (blog.image) {
+        const oldImagePath = path.join(__dirname, '..', 'public', 'uploads', blog.image);
+        fs.unlinkSync(oldImagePath);
+      }
+      blog.image = req.file.filename;
+    }
+
+    await blog.save();
+    res.redirect('/blogs/user/all');
+  } catch (err) {
+    console.error('Error updating blog:', err);
+    res.status(500).json({ error: 'Error updating blog' });
+  }
+}

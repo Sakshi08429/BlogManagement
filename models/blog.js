@@ -18,6 +18,10 @@ const Blog = sequelize.define('Blog', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  status: {
+    type: DataTypes.ENUM('pending', 'rejected', 'approved'),
+    defaultValue: 'pending',
+  },
   sectorId: DataTypes.UUID,
   createdBy: DataTypes.UUID,
   updatedBy: DataTypes.UUID,

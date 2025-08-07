@@ -111,7 +111,7 @@ router.get('/superadmin/approval', ensureAuthenticated, async (req, res) => {
   const offset = (page - 1) * limit;   
   try {
     const { count, rows } = await Blog.findAndCountAll({
-      where: { approved: false },
+      where: { approved: false , status: 'pending' }, 
       include: [Sector, { model: User, as: 'author' }],
       limit,
       offset,

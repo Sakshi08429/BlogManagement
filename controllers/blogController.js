@@ -23,7 +23,7 @@ exports.createBlogRequest = async (req, res) => {
 
   const { error, value } = schema.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
-const approved = (req.user.role === 'user') ? false : true;
+const approved = false;
 const status='pending';
   try {
     const blog = await Blog.create({
@@ -142,7 +142,7 @@ exports.getUserBlogs = async (req, res) => {
   const offset = (page - 1) * limit;
    const currentPage=page;
    const { count, rows } = await Blog.findAndCountAll({
-      where: { createdBy: req.user.id },
+      where: { createdBy: req.user.id, },
       include: [Sector],
       limit,
       offset,
@@ -508,6 +508,7 @@ exports.getBlogForEditUser = async (req, res) => {
   }
 } 
 
+
 exports.updateBlogForUser = async (req, res) => {
   const blogId = req.params.id;
   const { title, description, sectorId, isPublic } = req.body;
@@ -522,10 +523,16 @@ exports.updateBlogForUser = async (req, res) => {
     blog.isPublic = isPublic;
     blog.updatedBy = req.user.id;
 
+    blog.approved = false;
+    blog.status = 'pending';
+
+
     if (req.file) {
       if (blog.image) {
         const oldImagePath = path.join(__dirname, '..', 'public', 'uploads', blog.image);
-        fs.unlinkSync(oldImagePath);
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
       }
       blog.image = req.file.filename;
     }

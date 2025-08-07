@@ -109,7 +109,8 @@ exports.approveBlog = async (req, res) => {
       order: [['createdAt', 'DESC']],
     });
   
-  res.render('blogs/approval', {
+    if(req.user==='superadmin')
+  {res.render('blogs/approval', {
       blogs: await Blog.findAll({
         where: { approved: false },
         include: [Sector, { model: User, as: 'author' }],
@@ -120,7 +121,25 @@ exports.approveBlog = async (req, res) => {
       user: dbUser,
       currentPage: page,
     totalPages: Math.ceil(count / limit),
-    });
+    });}
+    else{
+      const sectors = await admin.getAssignedSectors();
+      adminSectorIds = sectors.map(s => s.id);
+      res.render('blogs/approval', {
+        blogs: await Blog.findAll({
+          where: { approved: false ,
+            sectorId: { [Op.in]: adminSectorIds },
+          },   
+          include: [Sector, { model: User, as: 'author' }],
+          limit,
+          offset,
+          order: [['createdAt', 'DESC']],
+        }),
+        user: dbUser,
+        currentPage: page,
+        totalPages: Math.ceil(count / limit),
+      });
+    }
   }
   catch (err) {
     console.error('Error approving blog:', err);
@@ -544,3 +563,4 @@ exports.updateBlogForUser = async (req, res) => {
     res.status(500).json({ error: 'Error updating blog' });
   }
 }
+

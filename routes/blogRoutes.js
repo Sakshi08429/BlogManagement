@@ -76,4 +76,5 @@ router.post('/user/edit/:id', authenticateJWT, roleMiddleware(['user']), upload.
 
 router.post('/delete/:id', authenticateJWT, roleMiddleware(['user', 'admin', 'superadmin']), blogController.deleteBlog);
 
+
 module.exports = router;

@@ -11,9 +11,9 @@ exports.createBlogs = async (req, res) => {
   res.render('blogs/create',{sectors});
 }
 
-
 exports.createBlogRequest = async (req, res) => {
-  const user= req.user;
+  const user = req.user;
+
   const schema = Joi.object({
     title: Joi.string().required(),
     description: Joi.string().required(),
@@ -23,56 +23,36 @@ exports.createBlogRequest = async (req, res) => {
 
   const { error, value } = schema.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
-const approved = false;
-const status='pending';
+
+  // Set approval based on role
+  let approved = false;
+  let status = 'pending';
+
+  if (user.role === 'admin' || user.role === 'superadmin') {
+    approved = true;
+    status= 'approved';
+  }
+
   try {
-    const blog = await Blog.create({
+    await Blog.create({
       title: value.title,
       description: value.description,
       sectorId: value.sectorId,
       isPublic: value.isPublic,
       image: req.file?.filename || null,
-      approved: approved,
-      status: status,
-
-      createdBy: req.user.id,
-      updatedBy: req.user.id,
+      approved,
+      status,
+      createdBy: user.id,
+      updatedBy: user.id,
     });
-    
-
-      const page = parseInt(req.query.page) || 1;
-    const limit = 5;
-    const offset = (page - 1) * limit;
-    const { count } = await Blog.findAndCountAll({
-      where: { createdBy: req.user.id },
-      include: [Sector],
-      limit,
-      offset,
-      order: [['createdAt', 'DESC']],
-    });
-    
-
-
-    const dbUser = await User.findByPk(req.user.id);
-    const blogs = await Blog.findAll({
-      where: { createdBy: req.user.id },
-      include: [Sector],
-      limit,
-      order: [['createdAt', 'DESC']], 
-      offset,
-    });
-   
-   
 
     res.redirect('/dashboard'); 
-   
-    
-  } 
-  catch (err) {
+  } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to create blog request' });
   }
 };
+
 
 //  Approve blog 
 exports.approveBlog = async (req, res) => {
@@ -123,7 +103,7 @@ exports.approveBlog = async (req, res) => {
     totalPages: Math.ceil(count / limit),
     });}
     else{
-      const sectors = await admin.getAssignedSectors();
+      const sectors = await dbUser.getAssignedSectors();
       adminSectorIds = sectors.map(s => s.id);
       res.render('blogs/approval', {
         blogs: await Blog.findAll({
@@ -341,13 +321,16 @@ exports.getPublicBlogs = async (req, res) => {
       order: [['createdAt', 'DESC']],
     });
 
-    res.render('blogs/public',{
-      user: req.user,
-      blogs: rows,
-      currentPage: page,
-      totalPages: Math.ceil(count / limit),
-    });
+res.render('blogs/public', {
+  role: req.user ? req.user.role : 'guest',
+  user: req.user || null,
+  blogs: rows,
+  currentPage: page,
+  totalPages: Math.ceil(count / limit),
+});
+
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: 'Error fetching blogs' });
   }
 };

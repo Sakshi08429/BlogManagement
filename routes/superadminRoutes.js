@@ -47,28 +47,40 @@ router.get('/superadmin/add-admin', ensureAuthenticated, checkRole(['superadmin'
   }
 });
 
-//  Add User 
+//  Add admin
 router.post('/superadmin/add-admin', ensureAuthenticated, checkRole(['superadmin']), async (req, res) => {
-  const { name, email, password, role, sectorId } = req.body;
+  const { name, email, password, sectorIds } = req.body; // Notice: sectorIds (array)
+
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user=await User.create({
+    
+    const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      role:'admin',
-      sectorId: role === 'admin' ? sectorId : null,
+      role: 'admin',
       createdBy: req.user.id,
       updatedBy: req.user.id
     });
- await AdminSector.create({ adminId: user.id, sectorId });
+
+    
+    const sectors = Array.isArray(sectorIds) ? sectorIds : [sectorIds];
+
+    const adminSectorMappings = sectors.map(sectorId => ({
+      adminId: user.id,
+      sectorId
+    }));
+
+    await AdminSector.bulkCreate(adminSectorMappings);
+
     res.redirect('/dashboard');
   } catch (err) {
-    console.error(err);
+    console.error('Error adding admin:', err);
     res.status(500).send('Error adding admin');
   }
 });
+
 
 
 //add sector
@@ -82,7 +94,7 @@ router.get('/superadmin/add-sector', ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Add User 
+
 router.post('/superadmin/add-sector', ensureAuthenticated, async (req, res) => {
   const { name } = req.body;
   try {
@@ -103,7 +115,7 @@ router.post('/superadmin/add-sector', ensureAuthenticated, async (req, res) => {
 
 
 
-//get all blogs for approval
+// all blogs for approval
 router.get('/superadmin/approval', ensureAuthenticated, async (req, res) => {
   
   const page = parseInt(req.query.page) || 1;
@@ -119,6 +131,7 @@ router.get('/superadmin/approval', ensureAuthenticated, async (req, res) => {
     });
 
     res.render('blogs/approval', {
+      user: req.user,
       blogs: rows,
       currentPage: page,
       totalPages: Math.ceil(count / limit),

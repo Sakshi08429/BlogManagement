@@ -32,15 +32,30 @@
             <input type="password" id="adminPassword" name="password" class="form-control" placeholder="Enter password" required />
           </div>
 
-          <div class="mb-3">
-            <label for="sectorSelect" class="form-label">Select Sector</label>
-            <select name="sectorId" id="sectorSelect" class="form-select" required>
-              <option value="" disabled selected>Select sector</option>
-              <% sectors.forEach(sector => { %>
-                <option value="<%= sector.id %>"><%= sector.name %></option>
-              <% }) %>
-            </select>
-          </div>
+<div class="mb-3">
+  <label class="form-label">Select Sectors</label>
+  <div class="row">
+    <% sectors.forEach(sector => { %>
+      <div class="col-md-4">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            name="sectorIds[]"
+            value="<%= sector.id %>"
+            id="sector-<%= sector.id %>"
+          />
+          <label class="form-check-label" for="sector-<%= sector.id %>">
+            <%= sector.name %>
+          </label>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+
+
 
           <button type="submit" class="btn btn-success">Add Admin</button>
          

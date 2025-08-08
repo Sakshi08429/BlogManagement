@@ -95,23 +95,28 @@
           </span>
 
           <ul class="pagination mb-0">
-            <!-- Previous -->
-            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-              <a class="page-link"
-                href="<%= user && user.role === 'superadmin' ? '/blogs/superadmin/all?page=' + (currentPage - 1) : '/blogs/guest?page=' + (currentPage - 1) %>"
-                title="Go to previous page">
-                &laquo; Previous
-              </a>
-            </li>
+           <!-- Previous -->
+<li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+  <a class="page-link"
+    href="<%= (user && (user.role === 'superadmin' || user.role === 'admin' || user.role === 'user')) 
+      ? '/blogs/superadmin/all?page=' + (currentPage - 1) 
+      : '/blogs/guest?page=' + (currentPage - 1) %>"
+    title="Go to previous page">
+    &laquo; Previous
+  </a>
+</li>
 
-            <!-- Next -->
-            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-              <a class="page-link"
-                href="<%= user && user.role === 'superadmin' ? '/blogs/superadmin/all?page=' + (currentPage + 1) : '/blogs/guest?page=' + (currentPage + 1) %>"
-                title="Go to next page">
-                Next &raquo;
-              </a>
-            </li>
+<!-- Next -->
+<li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+  <a class="page-link"
+    href="<%= (user && (user.role === 'superadmin' || user.role === 'admin' || user.role === 'user')) 
+      ? '/blogs/superadmin/all?page=' + (currentPage + 1) 
+      : '/blogs/guest?page=' + (currentPage + 1) %>"
+    title="Go to next page">
+    Next &raquo;
+  </a>
+</li>
+
           </ul>
         </div>
       </nav>

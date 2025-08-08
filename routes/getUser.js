@@ -7,7 +7,7 @@ const userController= require('../controllers/userController');
 router.get('/', ensureAuthenticated, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 5;
+    const limit = 12;
     const offset = (page - 1) * limit;
 
     const { count, rows: blogs } = await Blog.findAndCountAll({

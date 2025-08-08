@@ -134,6 +134,34 @@
         <% }) %>
       </div>
     <% } %>
+
+ 
+    <ul class="pagination mb-0">
+  
+  <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+    <% if (currentPage === 1) { %>
+      <span class="page-link">&laquo; Previous</span>
+    <% } else { %>
+      <a class="page-link" href="?page=<%= currentPage - 1 %>">
+        &laquo; Previous
+      </a>
+    <% } %>
+  </li>
+
+
+  <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+    <% if (currentPage === totalPages) { %>
+      <span class="page-link">Next &raquo;</span>
+    <% } else { %>
+      <a class="page-link" href="?page=<%= currentPage + 1 %>">
+        Next &raquo;
+      </a>
+    <% } %>
+  </li>
+</ul>
+
+
+    
   </div>
 
  

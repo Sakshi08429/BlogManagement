@@ -95,7 +95,7 @@
           </span>
 
           <ul class="pagination mb-0">
-           <!-- Previous -->
+           
 <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
   <a class="page-link"
     href="<%= (user && (user.role === 'superadmin' || user.role === 'admin' || user.role === 'user')) 
@@ -106,7 +106,7 @@
   </a>
 </li>
 
-<!-- Next -->
+
 <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
   <a class="page-link"
     href="<%= (user && (user.role === 'superadmin' || user.role === 'admin' || user.role === 'user')) 

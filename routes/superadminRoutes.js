@@ -4,7 +4,6 @@ const { ensureAuthenticated, checkRole } = require('../middlewares/authMiddlewar
 const { Sector, User,Blog,AdminSector } = require('../models');
 const bcrypt = require('bcryptjs');
 
-//  Add User Form
 router.get('/superadmin/add-user', ensureAuthenticated, checkRole(['superadmin']), async (req, res) => {
   try {
     const sectors = await Sector.findAll();
@@ -49,7 +48,7 @@ router.get('/superadmin/add-admin', ensureAuthenticated, checkRole(['superadmin'
 
 //  Add admin
 router.post('/superadmin/add-admin', ensureAuthenticated, checkRole(['superadmin']), async (req, res) => {
-  const { name, email, password, sectorIds } = req.body; // Notice: sectorIds (array)
+  const { name, email, password, sectorIds } = req.body; 
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -119,7 +118,7 @@ router.post('/superadmin/add-sector', ensureAuthenticated, async (req, res) => {
 router.get('/superadmin/approval', ensureAuthenticated, async (req, res) => {
   
   const page = parseInt(req.query.page) || 1;
-  const limit = 5;
+  const limit = 2;
   const offset = (page - 1) * limit;   
   try {
     const { count, rows } = await Blog.findAndCountAll({

@@ -20,7 +20,7 @@ router.post('/assign-sector', async (req, res) => {
 
 
 
-// Show Add User form
+
 router.get('/add-user', ensureAuthenticated, checkRole(['admin']), renderAddUserForm);
 router.post('/add-user', ensureAuthenticated, checkRole(['admin']), addUser);
 

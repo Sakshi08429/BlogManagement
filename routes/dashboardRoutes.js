@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { ensureAuthenticated } = require('../middlewares/authMiddleware');
-const { Blog, Sector, User } = require('../models'); // Import your models
+const { Blog, Sector, User } = require('../models');
 
 router.get('/', ensureAuthenticated, async (req, res) => {
   try {

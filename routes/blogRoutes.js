@@ -4,8 +4,7 @@ const blogController = require('../controllers/blogController');
 const {authenticateJWT} = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 const upload = require('../middlewares/upload');
-
-//  blog request 
+ 
 router.post(
   '/create',
   authenticateJWT,
@@ -14,7 +13,7 @@ router.post(
   blogController.createBlogRequest
 );
 
-// Approve blog 
+// Approve 
 router.get(
   '/approve/:id',
   authenticateJWT,
@@ -34,10 +33,10 @@ router.get(
 
 
 
-//get all blogs for superadmin
+//all blogs for superadmin
 router.get('/superadmin/all', authenticateJWT, roleMiddleware(['superadmin','admin','user']), blogController.getAllBlogsForSuperAdmin);
 
-// Dashboard view
+// Dashboard 
 router.get('/dashboard', authenticateJWT, blogController.getDashboard);
 
 
@@ -48,10 +47,10 @@ router.get('/myBlogs',authenticateJWT,blogController.createBlogs);
 
 router.get('/guest', blogController.getPublicBlogs);
 
-// for user to view his blogs
+//  user blogs
 router.get('/user/all', authenticateJWT, roleMiddleware(['user']), blogController.getUserBlogs)
 
-//for admin to view his blogs
+//admin blogs
 router.get('/my', authenticateJWT, roleMiddleware(['admin']), blogController.getAdminBlogs);
 
 

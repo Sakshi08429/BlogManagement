@@ -5,10 +5,8 @@ const Blog = require('./blog');
 const AdminSector = require('./adminSector');
 
 
-
 User.hasMany(Blog, { foreignKey: 'createdBy', as: 'blogs'});
 Blog.belongsTo(User, { foreignKey: 'createdBy', as: 'author'  }); 
-
 
 
 Sector.hasMany(Blog, { foreignKey: 'sectorId' });

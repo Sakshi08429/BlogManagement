@@ -4,15 +4,14 @@ const { sequelize, User } = require('./models');
 
 const seed = async () => {
   try {
-    await sequelize.sync({ alter: true }); // Use force: true if you want to reset all tables
+    await sequelize.sync({ alter: true }); 
 
-    // Check if superadmin already exists
     const existing = await User.findOne({
       where: { role: 'superadmin' }
     });
 
     if (existing) {
-      console.log('❗ Superadmin already exists');
+      console.log(' Superadmin already exists');
       return;
     }
 
@@ -25,10 +24,10 @@ const seed = async () => {
       role: 'superadmin'
     });
 
-    console.log('✅ Superadmin seeded successfully');
+    console.log(' Superadmin seeded successfully');
     process.exit(0);
   } catch (err) {
-    console.error('❌ Error seeding superadmin:', err);
+    console.error(' Error seeding superadmin:', err);
     process.exit(1);
   }
 };

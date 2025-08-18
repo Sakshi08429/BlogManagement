@@ -373,7 +373,7 @@ exports.updateBlog = async (req, res) => {
       if (blog.image) {
         const imagePath = path.join(__dirname, '..', 'public', 'uploads', blog.image);
 
-        fs.unlinkSync(oldImagePath);
+        fs.unlinkSync(imagePath);
       }
       blog.image = req.file.filename;
     }
